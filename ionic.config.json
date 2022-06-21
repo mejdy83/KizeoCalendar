@@ -1,0 +1,7 @@
+{
+  "name": "Kizeo Calendrier",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}

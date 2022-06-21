@@ -1,0 +1,69 @@
+
+<ion-header>  
+  <ion-toolbar color="primary">  
+    <ion-buttons slot="start">  
+      <ion-menu-button color="dark"></ion-menu-button>   
+    </ion-buttons>  
+    <ion-title>  
+      {{ currentMonth }}
+    </ion-title>  
+  </ion-toolbar>   
+</ion-header>  
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Pull to refresh"
+      refreshingSpinner="circles"
+      refreshingText="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+  <div *ngIf="showAddEvent" class="ion-padding">
+    <ion-item>
+      <ion-label><b>Titre:</b></ion-label>
+      <ion-input type="text" placeholder="Titre" [(ngModel)]="newEvent.title"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label><b>Description:</b></ion-label>
+      <ion-input type="text" placeholder="Description" [(ngModel)]="newEvent.description"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label><b>Mail des participants:</b></ion-label>
+      <ion-input type="text" placeholder="Mail" [(ngModel)]="newEvent.mail"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label><b>Image:</b></ion-label>
+      <ion-input type="text" placeholder="URL de l'image" [(ngModel)]="newEvent.imageURL"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label><b>Début</b></ion-label>
+      <ion-datetime doneText="OK" cancelText="Annuler" i18n displayFormat="DD/MM/YYYY HH:mm" pickerFormat="MMM D HH:mm" [(ngModel)]="newEvent.startTime" [min]="minDate"></ion-datetime>
+    </ion-item>
+    <ion-item>
+      <ion-label><b>Fin</b></ion-label>
+      <ion-datetime doneText="OK" cancelText="Annuler" displayFormat="DD/MM/YYYY HH:mm" pickerFormat="MMM D HH:mm" [(ngModel)]="newEvent.endTime" [min]="minDate"></ion-datetime>
+    </ion-item><ion-button color="warning" expand="block" (click)="checkStorage()">Check</ion-button>
+    <ion-button color="warning" expand="block" (click)="addEvent()">Ajouter</ion-button>
+  </div>
+  <calendar *ngIf="!showAddEvent" id="myCalendar"
+  locale="fr-FR"
+  calendarMode="month" 
+  startHour="6"
+  endHour="20"
+  step="30"
+  startingDayWeek="1"
+  [eventSource]="allEvents" 
+  [currentDate]="currentDate"
+  (onEventSelected)="onEventSelected($event)"
+  (onTimeSelected)="onTimeSelected($event)"
+  (onTitleChanged)="onViewTitleChanged($event)">
+</calendar>
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button (click)="showHideForm()">
+    <ion-icon *ngIf="!showAddEvent" name="add"></ion-icon>
+    <ion-icon *ngIf="showAddEvent" name="close"></ion-icon>
+  </ion-fab-button>
+</ion-fab>
+
+</ion-content>

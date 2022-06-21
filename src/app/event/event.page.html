@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar color="warning">
+    <ion-title>{{ title }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="light" (click)="close()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <img [src]="imageURL">
+  
+  <ion-item>
+    
+    <ion-input type="text"  [(ngModel)]="description"></ion-input>
+  </ion-item>
+  <ion-item *ngIf="mail">
+    <ion-input type="text"  [(ngModel)]="mail"></ion-input>
+    <ion-button >Envoyer l'invitation</ion-button>
+  </ion-item>
+  <ion-item>
+    <ion-label><b>Début:</b></ion-label>
+    <ion-input type="datetime"  [(ngModel)]="start"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label><b>Fin:</b></ion-label>
+    <ion-input type="datetime"  [(ngModel)]="end"></ion-input>
+  </ion-item>
+<ion-button (click)="delete()" color="warning">Supprimer</ion-button>
+<ion-button (click)="update()" color="warning">Modifier</ion-button>
+</ion-content>
