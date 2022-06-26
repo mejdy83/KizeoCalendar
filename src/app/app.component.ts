@@ -38,7 +38,12 @@ import { Router } from '@angular/router';
          title : 'Liste des events',  
          url   : '/home',  
          icon  : 'book'  
-       }
+       },
+       { 
+        title : 'Statistiques',  
+        url   : '/stat',  
+        icon  : 'book'  
+      }
        
      ];  
    }  

@@ -1,10 +1,14 @@
 import { Component, OnInit ,ViewChild} from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
-import { CalendarComponent, CalendarMode } from 'ionic2-calendar/calendar';
-import { CalendarService } from 'ionic2-calendar/calendar.service';
+import { CalendarComponent } from 'ionic2-calendar/calendar';
 import { ModalController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
+
+import { Camera, CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
 import { EventPage } from '../event/event.page';
+import { ActionSheetController } from '@ionic/angular';
+import { ImagePicker,ImagePickerOptions } from '@awesome-cordova-plugins/image-picker/ngx';
+import { DomSanitizer } from '@angular/platform-browser';
 @Component({
   selector: 'app-calendrier',
   templateUrl: './calendrier.page.html',
@@ -14,6 +18,8 @@ export class CalendrierPage implements OnInit {
   currentDate = new Date();
   currentMonth: string;
   showAddEvent: boolean;
+  securepath: any = window;
+  url:any;
   minDate = new Date().toISOString();
   allEvents = [];
   newEvent = {
@@ -25,13 +31,75 @@ export class CalendrierPage implements OnInit {
     mail:''
   };
   @ViewChild(CalendrierPage, {static: false}) myCalendar: CalendarComponent;
-  constructor(public modalController: ModalController,public storage:Storage,
-    public afDB: AngularFireDatabase) {
+  foo: any;
+  imageurl: any;
+  constructor(public modalController: ModalController, private camera: Camera,private actionsheet: ActionSheetController,public storage:Storage,
+    public afDB: AngularFireDatabase,private imagePicker: ImagePicker,private domsanitize: DomSanitizer) {
     this.loadEvent()
    }
-  async checkStorage(){
-    
-    
+
+   pickImagesFromLibrary(){
+    const options: ImagePickerOptions = {
+      quality: 100,
+      maximumImagesCount: 1,
+    };
+    this.imagePicker.getPictures(options).then((imageresult)=> {
+    console.log('image Picker Results', imageresult);
+
+     for(let i=0; i<imageresult.length; i++){
+      this.url = this.securepath.Ionic.WebView.convertFileSrc(imageresult[i]);
+     }
+    }, rror=>{
+      console.log('Image Picker Error:', rror);
+    });
+  }
+  async selectimageOptions(){
+    const actionsheet = await this.actionsheet.create({
+     header: "Choisissez la source de l'image",
+     buttons: [
+       {
+         text: 'Choisir dans la gallerie',
+         handler: ()=>{
+           this.pickImagesFromLibrary();
+           console.log('Image Selected from Gallery');
+         }
+       },
+       {
+         text: 'Prendre une photo',
+         handler: ()=>{
+           this.chooseFromCamera(this.camera.PictureSourceType.CAMERA);
+           console.log('Camera Selected');
+         }
+       },
+       {
+         text: 'Annuler',
+         role: 'cancel'
+       }
+     ]
+    });
+    await actionsheet.present();
+  }
+  chooseFromCamera(sourceType){
+    const options: CameraOptions = {
+       quality: 100,
+       mediaType: this.camera.MediaType.PICTURE,
+       destinationType: this.camera.DestinationType.FILE_URI,
+       encodingType: this.camera.EncodingType.JPEG,
+       sourceType: sourceType,
+    };
+
+    this.camera.getPicture(options).then((result) => {
+      console.log('Camera URL',result);
+      // this.imageurl = result;
+      this.imageurl = this.securepath.Ionic.WebView.convertFileSrc(result);
+    }, error=>{
+      console.log('Error CAMERA', error);
+    });
+  }
+  sanitizeUrl(imageUrl){
+    return this.domsanitize.bypassSecurityTrustUrl(imageUrl);
+  }
+  async checkStorage(){    
     this.storage.forEach((key, value, index) => {
       console.log(key.key)
       if(key.key==''){
@@ -60,13 +128,14 @@ export class CalendrierPage implements OnInit {
   
   async addEvent() {
     //console.log(this.newEvent)
+    console.log(this.newEvent.mail.split(','))
     this.afDB.list('Events').push({
       title: this.newEvent.title,
       startTime:  (this.newEvent.startTime),
       endTime: (this.newEvent.endTime),
       description: this.newEvent.description,
       imageURL: this.newEvent.imageURL,
-      mail:this.newEvent.mail
+      mail:this.newEvent.mail.split(',')
     });
     await this.storage.set('', {
       title: this.newEvent.title,
@@ -74,16 +143,17 @@ export class CalendrierPage implements OnInit {
       endTime: this.newEvent.endTime,
       description: this.newEvent.description,
       imageURL: this.newEvent.imageURL,
-      mail:this.newEvent.mail,
+      mail:this.newEvent.mail.split(','),
     });
     this.showHideForm();
     this.loadEvent();
   }
  
   loadEvent() {
+    console.log(this.minDate)
     //console.log(this.myCalendar)
     if(navigator.onLine){
-      this.afDB.list('Events').snapshotChanges(['child_added']).subscribe(actions => {
+      this.foo=this.afDB.list('Events').snapshotChanges(['child_added']).subscribe(actions => {
         this.allEvents=[]
         actions.forEach(async action => {
          // console.log('date'+action.payload.exportVal().endTime);
@@ -150,5 +220,7 @@ export class CalendrierPage implements OnInit {
     this.loadEvent()
     await this.storage.create();
   }
-
+  ionViewDidLeave() {
+    this.foo.unsubscribe();
+  }
 }

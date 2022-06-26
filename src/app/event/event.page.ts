@@ -4,6 +4,8 @@ import { NavParams } from '@ionic/angular';
 import { DatePipe, formatDate } from '@angular/common';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { Router } from '@angular/router';
+
+import{EmailComposer} from '@ionic-native/email-composer/ngx';
 @Component({
   selector: 'app-event',
   templateUrl: './event.page.html',
@@ -12,14 +14,19 @@ import { Router } from '@angular/router';
 export class EventPage implements OnInit {
   title: string;
   imageURL: string;
-  mail: string;
+  mail=[];
   description: string;
   start: string;
   end: string;
   key: any;
 
-  constructor(public modalController: ModalController, private router: Router,
-    public navParams: NavParams, public afDB: AngularFireDatabase) {
+  constructor(
+    public modalController: ModalController,
+    public emailComposer: EmailComposer, 
+    private router: Router,
+    public navParams: NavParams, 
+    public afDB: AngularFireDatabase)
+    {
     this.title = navParams.get('title');
     this.imageURL = navParams.get('imageURL');
     this.mail = navParams.get('mail');
@@ -33,6 +40,44 @@ export class EventPage implements OnInit {
     this.modalController.dismiss();
 
   }
+  sendMail() {
+  //   let email = {
+  //     to: 'support@tub.bzh',
+  //     cc: '',
+  //     subject: 'Support application transporteur TUB',
+  //     body: 'Bonjour, <br><br> Je recontre actuellement un problème XXXXXXX .<br><br> Merci pour votre aide.<br> Cordialement,',
+  //     isHtml: true
+  //   };
+  //   this.emailComposer.open(email);
+  // }
+      
+    
+    this.emailComposer.isAvailable().then((available) =>{
+      if(available) {
+        
+        console.log("ici");
+        let email = {
+          to: this.mail,
+          cc: '',
+          bcc:'',
+          attachments: [
+            
+          ],
+          subject: 'Kizeo Calendar : Invitation à un évènement:'+this.title,
+          body: "Un utilisateur souhaite vous inviter à l'évènement"+this.description+" à partir de "+formatDate(this.navParams.get('startTime'), 'medium', 'fr-FR')+" au "+formatDate(this.navParams.get('startTime'), 'medium', 'fr-FR'),
+          isHtml: false
+        }
+      
+        this.emailComposer.open(email);
+      }
+      else{
+        
+        console.log("LA");
+        
+      }
+      }).catch((error)=>console.log(error));}
+    
+  
   delete() {
     this.afDB.list('Events').remove(this.key);
     this.close();
@@ -51,6 +96,7 @@ export class EventPage implements OnInit {
     this.close();
   }
   ngOnInit() {
+    
   }
-
+ 
 }

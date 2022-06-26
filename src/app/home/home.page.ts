@@ -10,13 +10,14 @@ import { AngularFireDatabase } from '@angular/fire/compat/database';
 export class HomePage {
   allEvents: any[];
  searchTerm:string;
+  foo: any;
   constructor(public afDB: AngularFireDatabase) {}
 ngOnInit(){
   this.loadEvent()
 }
 loadEvent() {
   //console.log(this.myCalendar)
-  this.afDB.list('Events').snapshotChanges(['child_added']).subscribe(actions => {
+  this.foo=this.afDB.list('Events').snapshotChanges(['child_added']).subscribe(actions => {
     this.allEvents=[]
     actions.forEach(action => {
       console.log(action.key)
@@ -34,6 +35,9 @@ loadEvent() {
       
     });
   });
-  console.log(this.allEvents)
+  console.log(this.allEvents);
+}
+ionViewDidLeave() {
+  this.foo.unsubscribe();
 }
 }

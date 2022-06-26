@@ -16,8 +16,8 @@
     <ion-input type="text"  [(ngModel)]="description"></ion-input>
   </ion-item>
   <ion-item *ngIf="mail">
-    <ion-input type="text"  [(ngModel)]="mail"></ion-input>
-    <ion-button >Envoyer l'invitation</ion-button>
+    <ion-input type="text"  [(ngModel)]="mail" ></ion-input>
+    <ion-button (click)="sendMail()">Envoyer l'invitation</ion-button>
   </ion-item>
   <ion-item>
     <ion-label><b>Début:</b></ion-label>

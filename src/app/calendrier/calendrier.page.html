@@ -34,15 +34,18 @@
     </ion-item>
     <ion-item>
       <ion-label><b>Image:</b></ion-label>
-      <ion-input type="text" placeholder="URL de l'image" [(ngModel)]="newEvent.imageURL"></ion-input>
+      <div *ngIf="url">
+        <img [src]="sanitizeUrl(url)" height="100" width="150"/>
+       </div>
+      <ion-button (click)="selectimageOptions()">Select Image</ion-button>
     </ion-item>
     <ion-item>
       <ion-label><b>Début</b></ion-label>
-      <ion-datetime doneText="OK" cancelText="Annuler" i18n displayFormat="DD/MM/YYYY HH:mm" pickerFormat="MMM D HH:mm" [(ngModel)]="newEvent.startTime" [min]="minDate"></ion-datetime>
+      <ion-datetime doneText="OK" cancelText="Annuler" i18n displayFormat="DD/MM/YYYY HH:mm" pickerFormat="MMM D HH:mm" [(ngModel)]="newEvent.startTime" ></ion-datetime>
     </ion-item>
     <ion-item>
       <ion-label><b>Fin</b></ion-label>
-      <ion-datetime doneText="OK" cancelText="Annuler" displayFormat="DD/MM/YYYY HH:mm" pickerFormat="MMM D HH:mm" [(ngModel)]="newEvent.endTime" [min]="minDate"></ion-datetime>
+      <ion-datetime doneText="OK" cancelText="Annuler" displayFormat="DD/MM/YYYY HH:mm" pickerFormat="MMM D HH:mm" [(ngModel)]="newEvent.endTime" [min]="newEvent.startTime"></ion-datetime>
     </ion-item><ion-button color="warning" expand="block" (click)="checkStorage()">Check</ion-button>
     <ion-button color="warning" expand="block" (click)="addEvent()">Ajouter</ion-button>
   </div>

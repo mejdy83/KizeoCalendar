@@ -10,11 +10,15 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { EventPageModule } from './event/event.module';
 import { IonicStorageModule } from '@ionic/storage-angular';
+import { EmailComposer } from '@ionic-native/email-composer/ngx';
+import { ImagePicker } from '@awesome-cordova-plugins/image-picker/ngx';
+import { Camera } from '@awesome-cordova-plugins/camera/ngx';
+import { File } from '@awesome-cordova-plugins/file/ngx';
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserModule,IonicStorageModule.forRoot(), IonicModule.forRoot(),
     EventPageModule, AppRoutingModule,AngularFireStorageModule,AngularFireDatabaseModule,AngularFireModule.initializeApp(environment.firebaseConfig)],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [File,Camera,ImagePicker,EmailComposer,{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
